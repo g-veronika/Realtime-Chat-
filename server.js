@@ -33,6 +33,13 @@ io.on('connection', socket => {
 
     });
 
+
+    //Send users and room info 
+    io.to(user.room).emit('roomUsers', {
+        room: user.room,
+        users: getRoomUsers(user.room)
+    });
+
     //Listen for chat message 
     socket.on('chatMessage', msg => {
 
@@ -42,20 +49,25 @@ io.on('connection', socket => {
 
     })
 
-    //Run when client disconnects
+    // Runs when client disconnects
     socket.on('disconnect', () => {
+    const user = userLeave(socket.id);
 
-        const user = userLeave(socket.id);
+    if (user) {
+      io.to(user.room).emit(
+        'message',
+        formatMessage(botName, `${user.username} has left the chat`)
+      );
 
-        if(user) {
-            io.to(user.room).emit('message', formatMessage(botName, `${user.username} has left the chat`))
-        }
-    })
-
-
+      // Send users and room info
+      io.to(user.room).emit('roomUsers', {
+        room: user.room,
+        users: getRoomUsers(user.room)
+      });
+     }
+    });
 });
 
-
-const PORT = 3001 || process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
