@@ -7,4 +7,14 @@ function userJoin(id, username, room) {
     users.pus(user);
 
     return user;
-} 
+};
+
+//Get current user 
+function getCurrrentUser(id) {
+    return users.find(user => user.id === id);
+};
+
+module.exports = {
+    userJoin,
+    getCurrrentUser
+};
