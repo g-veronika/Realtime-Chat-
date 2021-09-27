@@ -3,6 +3,8 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const formatMessage = require('./utils/messages');
+const { userJoin, getCurrrentUser} = require('./utils/users');
+
 
 
 const app = express();
@@ -19,17 +21,22 @@ io.on('connection', socket => {
 
     socket.on('joinRoom', ({ username, room }) => {
 
+        const user = userJoin(socket.id, username, room);
+
+        socket.join(user.room);
+
         //Welcome current user
         socket.emit('message', formatMessage(botName, 'Welcome to ChatCord !')); // To a single client
 
         //Broadcast when a user connects
-        socket.broadcast.emit('message', formatMessage(botName, 'A user has joined the chat')); //To all of the clients NOT connected
+        socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${user.username} has joined the chat`)); //To all of the clients NOT connected
 
     });
 
     //Listen for chat message 
     socket.on('chatMessage', msg => {
         io.emit('message', formatMessage('USER', msg));
+        
     })
 
     //Run when client disconnects
