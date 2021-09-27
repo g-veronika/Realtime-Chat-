@@ -18,7 +18,7 @@ io.on('connection', socket => {
     socket.emit('message', 'Welcome to ChatCord !'); // To a single client
 
     //Broadcast when a user connects
-    socket.broadcast.emit('message', 'A user has joined a chat'); //To all of the clients NOT connected
+    socket.broadcast.emit('message', 'A user has joined the chat'); //To all of the clients NOT connected
 
     //Run when client disconnects
     socket.on('disconnect', () => {
